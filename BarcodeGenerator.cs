@@ -29,7 +29,7 @@ namespace QRCodeLinux
 
             imageData = stream.ToArray();
 
-            string outputPath = @"C:\test\outputImageLinux.png";
+            var outputPath = RuntimeDirectory.GetRuntimeDirectory("outputImageLinux1.png");
             ImageService.SaveImage(bitmap, outputPath);
 
             var str64 = Convert.ToBase64String(imageData);
