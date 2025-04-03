@@ -3,6 +3,7 @@
 using SkiaSharp;
 using ZXing;
 using ZXing.Common;
+using ZXing.QrCode;
 using ZXing.SkiaSharp;
 
 namespace QRCodeLinux
@@ -11,25 +12,18 @@ namespace QRCodeLinux
     {
         public static string CreateQrCode(string data)
         {
-            byte[] imageData;
-
-            var barcodeWriter = new BarcodeWriter
-            {
-                Format = BarcodeFormat.QR_CODE,
-                Options = new EncodingOptions
-                {
-                    Height = 100,
-                    Width = 100,
-                    Margin = 0
-                }
-            };
-            using var bitmap = barcodeWriter.Write(data);
+            QRCodeWriter qrEncode = new QRCodeWriter();
+            Dictionary<EncodeHintType, object> hints = new Dictionary<EncodeHintType, object>();
+            hints.Add(EncodeHintType.CHARACTER_SET, "utf-8");
+            BitMatrix qrMatrix = qrEncode.encode(data, BarcodeFormat.QR_CODE, 100, 100, hints);
+            var qrWriter = new BarcodeWriter();
+            using var bitmap = qrWriter.Write(qrMatrix);
             using var stream = new MemoryStream();
             bitmap.Encode(stream, SKEncodedImageFormat.Png, 100);
 
-            imageData = stream.ToArray();
+            var imageData = stream.ToArray();
 
-            var outputPath = RuntimeDirectory.GetRuntimeDirectory("outputImageLinux1.png");
+            var outputPath = RuntimeDirectory.GetRuntimeDirectory("outputImageLinux2.png");
             ImageService.SaveImage(bitmap, outputPath);
 
             var str64 = Convert.ToBase64String(imageData);
